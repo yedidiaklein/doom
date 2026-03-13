@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sector Rush</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hud-bar">
+        <div>
+          <p class="eyebrow">Client-only arena</p>
+          <h1>Sector Rush</h1>
+        </div>
+        <div class="hud-actions">
+          <button id="muteButton" class="ui-button secondary" type="button">Mute: Off</button>
+          <button id="startButton" class="ui-button" type="button">Start Mission</button>
+        </div>
+      </header>
+
+      <main class="game-layout">
+        <section class="viewport-panel">
+          <canvas id="gameCanvas" width="960" height="540" aria-label="Game viewport"></canvas>
+          <div class="reticle" aria-hidden="true"></div>
+
+          <div id="overlay" class="overlay visible">
+            <div class="overlay-card intro-card">
+              <p class="eyebrow">Retro corridor shooter</p>
+              <h2>Clear the hostiles</h2>
+              <p>
+                Move with WASD or the touch controls, aim with mouse or arrow buttons,
+                and fire with click, Space, or the FIRE button.
+              </p>
+              <div class="overlay-actions">
+                <button id="overlayStartButton" class="ui-button" type="button">Enter Arena</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="endOverlay" class="overlay hidden" aria-live="polite">
+            <div class="overlay-card end-card">
+              <p class="eyebrow" id="endStatusLabel">Mission result</p>
+              <h2 id="endTitle">You Win</h2>
+              <p id="endMessage">All hostiles neutralized.</p>
+              <div class="overlay-actions">
+                <button id="restartButton" class="ui-button" type="button">Play Again</button>
+                <button id="shareButton" class="ui-button secondary" type="button">Share on WhatsApp</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="side-panel">
+          <div class="stat-grid">
+            <div class="stat-card">
+              <span>Health</span>
+              <strong id="healthValue">100</strong>
+            </div>
+            <div class="stat-card">
+              <span>Ammo</span>
+              <strong id="ammoValue">18</strong>
+            </div>
+            <div class="stat-card">
+              <span>Enemies</span>
+              <strong id="enemyValue">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>Kills</span>
+              <strong id="killsValue">0</strong>
+            </div>
+          </div>
+
+          <div class="instructions-card">
+            <p class="eyebrow">Controls</p>
+            <p>WASD move, mouse turn, click fire.</p>
+            <p>Arrow Up/Down move. Arrow Left/Right turn. R reloads instantly.</p>
+            <p>On phones, use the control pad below the viewport.</p>
+          </div>
+        </aside>
+      </main>
+
+      <section class="mobile-controls" aria-label="Touch controls">
+        <div class="control-cluster movement-cluster">
+          <button class="touch-button" data-action="forward" type="button">Forward</button>
+          <div class="control-row">
+            <button class="touch-button" data-action="left" type="button">Left</button>
+            <button class="touch-button" data-action="backward" type="button">Back</button>
+            <button class="touch-button" data-action="right" type="button">Right</button>
+          </div>
+        </div>
+
+        <div class="control-cluster action-cluster">
+          <div class="control-row">
+            <button class="touch-button" data-action="turnLeft" type="button">Turn L</button>
+            <button class="touch-button" data-action="turnRight" type="button">Turn R</button>
+          </div>
+          <button class="touch-button fire-button" data-action="fire" type="button">Fire</button>
+        </div>
+      </section>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>
