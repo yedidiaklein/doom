@@ -251,27 +251,49 @@ h1 {
 
 .mobile-controls {
   display: none;
-  justify-content: space-between;
-  gap: 14px;
+  justify-content: center;
   border-radius: 24px;
   padding: 14px;
   margin-top: 18px;
 }
 
-.control-cluster {
+.mobile-touchpad {
+  width: min(92vw, 420px);
+  min-height: 112px;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 194, 102, 0.38);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 128, 26, 0.18), rgba(18, 23, 34, 0.9) 70%),
+    linear-gradient(180deg, rgba(31, 39, 58, 0.95), rgba(14, 18, 27, 0.95));
   display: grid;
-  gap: 12px;
-  flex: 1;
+  place-items: center;
+  user-select: none;
+  touch-action: none;
 }
 
-.touch-button {
-  min-height: 54px;
-  padding: 12px 16px;
+.mobile-touchpad.active {
+  box-shadow: inset 0 0 0 1px rgba(255, 194, 102, 0.48), 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
-.fire-button {
-  min-height: 120px;
-  font-size: 1.1rem;
+.pad-knob {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 194, 102, 0.48);
+  background: radial-gradient(circle at 35% 30%, #ffd7a6, #ff7a24 45%, #6a2407 95%);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.32);
+  pointer-events: none;
+  transition: transform 60ms linear;
+}
+
+.pad-label {
+  position: absolute;
+  bottom: 8px;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: rgba(243, 237, 231, 0.78);
 }
 
 @media (max-width: 980px) {
@@ -323,16 +345,17 @@ h1 {
     display: flex;
     margin-top: 0;
     padding: 10px;
-    gap: 10px;
+    gap: 0;
   }
 
-  .touch-button {
-    min-height: 44px;
-    padding: 10px 12px;
+  .mobile-touchpad {
+    width: 100%;
+    min-height: 88px;
   }
 
-  .fire-button {
-    min-height: 82px;
+  .pad-knob {
+    width: 46px;
+    height: 46px;
   }
 }
 
@@ -372,5 +395,9 @@ h1 {
     margin: 6px;
     padding: 14px;
     gap: 10px;
+  }
+
+  .pad-label {
+    font-size: 0.63rem;
   }
 }

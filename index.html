@@ -36,7 +36,7 @@
               <h2>Clear the hostiles</h2>
               <p>
                 Move with WASD or the touch controls, aim with mouse or arrow buttons,
-                and fire with click, Space, or the FIRE button.
+                and fire with click, Space, or by tapping the mobile touch zone.
               </p>
               <div class="overlay-actions">
                 <button id="overlayStartButton" class="ui-button" type="button">Enter Arena</button>
@@ -81,27 +81,15 @@
             <p class="eyebrow">Controls</p>
             <p>WASD move, mouse turn, click fire.</p>
             <p>Arrow Up/Down move. Arrow Left/Right turn. R reloads instantly.</p>
-            <p>On phones, use the control pad below the viewport.</p>
+            <p>On phones, drag the touch zone to move and tap it to fire.</p>
           </div>
         </aside>
       </main>
 
       <section class="mobile-controls" aria-label="Touch controls">
-        <div class="control-cluster movement-cluster">
-          <button class="touch-button" data-action="forward" type="button">Forward</button>
-          <div class="control-row">
-            <button class="touch-button" data-action="left" type="button">Left</button>
-            <button class="touch-button" data-action="backward" type="button">Back</button>
-            <button class="touch-button" data-action="right" type="button">Right</button>
-          </div>
-        </div>
-
-        <div class="control-cluster action-cluster">
-          <div class="control-row">
-            <button class="touch-button" data-action="turnLeft" type="button">Turn L</button>
-            <button class="touch-button" data-action="turnRight" type="button">Turn R</button>
-          </div>
-          <button class="touch-button fire-button" data-action="fire" type="button">Fire</button>
+        <div id="mobilePad" class="mobile-touchpad" role="application" aria-label="Drag to move and tap to fire">
+          <div id="mobilePadKnob" class="pad-knob" aria-hidden="true"></div>
+          <p class="pad-label">Drag to move and turn. Tap to fire.</p>
         </div>
       </section>
     </div>

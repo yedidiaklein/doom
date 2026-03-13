@@ -17,6 +17,8 @@ const overlayStartButton = document.getElementById("overlayStartButton");
 const restartButton = document.getElementById("restartButton");
 const muteButton = document.getElementById("muteButton");
 const shareButton = document.getElementById("shareButton");
+const mobilePad = document.getElementById("mobilePad");
+const mobilePadKnob = document.getElementById("mobilePadKnob");
 
 const keys = new Set();
 const touchState = {
@@ -27,6 +29,17 @@ const touchState = {
   turnLeft: false,
   turnRight: false,
   fire: false,
+  move: 0,
+  turn: 0,
+};
+
+const padState = {
+  active: false,
+  pointerId: null,
+  startTime: 0,
+  startX: 0,
+  startY: 0,
+  moved: false,
 };
 
 const MAP = [
@@ -262,6 +275,106 @@ function normalizeAngle(angle) {
   return angle;
 }
 
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function updatePadVector(clientX, clientY) {
+  if (!mobilePad || !mobilePadKnob) {
+    return;
+  }
+
+  const rect = mobilePad.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  let axisX = (clientX - centerX) / (rect.width / 2);
+  let axisY = (clientY - centerY) / (rect.height / 2);
+
+  const distance = Math.hypot(axisX, axisY);
+  if (distance > 1) {
+    axisX /= distance;
+    axisY /= distance;
+  }
+
+  touchState.turn = clamp(axisX, -1, 1);
+  touchState.move = clamp(-axisY, -1, 1);
+
+  const knobTravelX = rect.width * 0.24;
+  const knobTravelY = rect.height * 0.24;
+  mobilePadKnob.style.transform = `translate(${axisX * knobTravelX}px, ${axisY * knobTravelY}px)`;
+}
+
+function resetPad() {
+  touchState.move = 0;
+  touchState.turn = 0;
+  if (mobilePadKnob) {
+    mobilePadKnob.style.transform = "translate(0px, 0px)";
+  }
+}
+
+function setupMobilePadControls() {
+  if (!mobilePad) {
+    return;
+  }
+
+  const onPointerDown = (event) => {
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+
+    padState.active = true;
+    padState.pointerId = event.pointerId;
+    padState.startTime = performance.now();
+    padState.startX = event.clientX;
+    padState.startY = event.clientY;
+    padState.moved = false;
+
+    mobilePad.classList.add("active");
+    mobilePad.setPointerCapture?.(event.pointerId);
+    updatePadVector(event.clientX, event.clientY);
+    event.preventDefault();
+  };
+
+  const onPointerMove = (event) => {
+    if (!padState.active || event.pointerId !== padState.pointerId) {
+      return;
+    }
+
+    const dragDistance = Math.hypot(event.clientX - padState.startX, event.clientY - padState.startY);
+    if (dragDistance > 8) {
+      padState.moved = true;
+    }
+
+    updatePadVector(event.clientX, event.clientY);
+    event.preventDefault();
+  };
+
+  const onPointerUp = (event) => {
+    if (!padState.active || event.pointerId !== padState.pointerId) {
+      return;
+    }
+
+    const pressDuration = performance.now() - padState.startTime;
+    const shouldFire = !padState.moved && pressDuration < 220;
+
+    padState.active = false;
+    padState.pointerId = null;
+    mobilePad.classList.remove("active");
+    resetPad();
+
+    if (shouldFire) {
+      fireWeapon();
+    }
+    event.preventDefault();
+  };
+
+  mobilePad.addEventListener("pointerdown", onPointerDown);
+  mobilePad.addEventListener("pointermove", onPointerMove);
+  mobilePad.addEventListener("pointerup", onPointerUp);
+  mobilePad.addEventListener("pointercancel", onPointerUp);
+  mobilePad.addEventListener("contextmenu", (event) => event.preventDefault());
+}
+
 function renderScene() {
   const width = canvas.width;
   const height = canvas.height;
@@ -374,10 +487,13 @@ function renderMiniStatus(width, height) {
 function updatePlayer(deltaTime) {
   const moveStep = config.moveSpeed * deltaTime;
   const turnStep = config.turnSpeed * deltaTime;
-  const forward = (keys.has("KeyW") || keys.has("ArrowUp") || touchState.forward ? 1 : 0)
+  const digitalForward = (keys.has("KeyW") || keys.has("ArrowUp") || touchState.forward ? 1 : 0)
     - (keys.has("KeyS") || keys.has("ArrowDown") || touchState.backward ? 1 : 0);
+  const forward = clamp(digitalForward + touchState.move, -1, 1);
   const strafe = (keys.has("KeyD") || touchState.right ? 1 : 0) - (keys.has("KeyA") || touchState.left ? 1 : 0);
-  const turning = (keys.has("ArrowRight") || touchState.turnRight ? 1 : 0) - (keys.has("ArrowLeft") || touchState.turnLeft ? 1 : 0);
+  const digitalTurning = (keys.has("ArrowRight") || touchState.turnRight ? 1 : 0)
+    - (keys.has("ArrowLeft") || touchState.turnLeft ? 1 : 0);
+  const turning = clamp(digitalTurning + touchState.turn, -1, 1);
 
   player.angle += turning * turnStep;
 
@@ -622,30 +738,7 @@ muteButton.addEventListener("click", () => {
 
 shareButton.addEventListener("click", shareResult);
 
-document.querySelectorAll("[data-action]").forEach((button) => {
-  const { action } = button.dataset;
-  const activate = () => {
-    touchState[action] = true;
-    button.classList.add("active");
-    if (action === "fire") {
-      fireWeapon();
-    }
-  };
-  const deactivate = () => {
-    touchState[action] = false;
-    button.classList.remove("active");
-  };
-
-  button.addEventListener("touchstart", (event) => {
-    event.preventDefault();
-    activate();
-  }, { passive: false });
-  button.addEventListener("touchend", deactivate);
-  button.addEventListener("touchcancel", deactivate);
-  button.addEventListener("mousedown", activate);
-  button.addEventListener("mouseup", deactivate);
-  button.addEventListener("mouseleave", deactivate);
-});
+setupMobilePadControls();
 
 resetGame();
 setMuted(false);
