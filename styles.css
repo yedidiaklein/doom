@@ -285,15 +285,61 @@ h1 {
 }
 
 @media (hover: none), (pointer: coarse), (max-width: 900px) {
+  html,
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .app-shell {
+    width: calc(100vw - 12px);
+    height: 100dvh;
+    padding: 6px 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .game-layout {
+    margin-top: 0;
+    gap: 8px;
+    min-height: 0;
+  }
+
+  .side-panel {
+    display: none;
+  }
+
+  .viewport-panel {
+    min-height: 0;
+    padding: 8px;
+  }
+
+  .overlay {
+    inset: 8px;
+  }
+
   .mobile-controls {
     display: flex;
+    margin-top: 0;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .touch-button {
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+
+  .fire-button {
+    min-height: 82px;
   }
 }
 
 @media (max-width: 640px) {
   .app-shell {
-    width: min(100vw, calc(100vw - 12px));
-    padding: 8px 0 18px;
+    width: calc(100vw - 8px);
+    gap: 6px;
   }
 
   .hud-bar,
@@ -304,11 +350,27 @@ h1 {
   }
 
   .hud-bar {
-    padding: 14px;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  h1 {
+    font-size: clamp(1.15rem, 5vw, 1.55rem);
+  }
+
+  .eyebrow {
+    font-size: 0.64rem;
+    letter-spacing: 0.13em;
+  }
+
+  .ui-button {
+    padding: 9px 12px;
+    font-size: 0.86rem;
   }
 
   .overlay-card {
-    margin: 10px;
-    padding: 18px;
+    margin: 6px;
+    padding: 14px;
+    gap: 10px;
   }
 }
